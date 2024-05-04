@@ -1,0 +1,99 @@
+{
+	"name": "DatesFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ParquetDates",
+						"type": "DatasetReference"
+					},
+					"name": "sqlDates"
+				},
+				{
+					"dataset": {
+						"referenceName": "VM_Dates",
+						"type": "DatasetReference"
+					},
+					"name": "vmDates"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DatesParquet",
+						"type": "DatasetReference"
+					},
+					"name": "DatesSink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          DateKey as integer,",
+				"          FullDate as date,",
+				"          isWeekDay as boolean,",
+				"          DayOfWeek as integer,",
+				"          DayOfMonth as integer,",
+				"          DayOfQuarter as integer,",
+				"          DayOfYear as integer,",
+				"          DayName as string,",
+				"          WeekOfYear as integer,",
+				"          WeekName as string,",
+				"          MonthOfYear as integer,",
+				"          MonthName as string,",
+				"          CalendarQuarter as integer,",
+				"          CalendarQuarterName as string,",
+				"          CalendarYear as integer,",
+				"          FiscalMonth as integer,",
+				"          FiscalMonthName as string,",
+				"          FiscalQuarter as integer,",
+				"          FiscalQuarterName as string,",
+				"          FiscalYear as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     partitionBy('hash', 1)) ~> sqlDates",
+				"source(output(",
+				"          DateKey as integer,",
+				"          FullDate as date,",
+				"          isWeekDay as boolean,",
+				"          DayOfWeek as integer,",
+				"          DayOfMonth as integer,",
+				"          DayOfQuarter as integer,",
+				"          DayOfYear as integer,",
+				"          DayName as string,",
+				"          WeekOfYear as integer,",
+				"          WeekName as string,",
+				"          MonthOfYear as integer,",
+				"          MonthName as string,",
+				"          CalendarQuarter as integer,",
+				"          CalendarQuarterName as string,",
+				"          CalendarYear as integer,",
+				"          FiscalMonth as integer,",
+				"          FiscalMonthName as string,",
+				"          FiscalQuarter as integer,",
+				"          FiscalQuarterName as string,",
+				"          FiscalYear as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> vmDates",
+				"sqlDates sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['Dates.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DatesSink"
+			]
+		}
+	}
+}

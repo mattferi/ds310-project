@@ -1,0 +1,167 @@
+{
+	"name": "MetricsFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ParquetCovid19Metrics",
+						"type": "DatasetReference"
+					},
+					"name": "sqlMetrics"
+				},
+				{
+					"dataset": {
+						"referenceName": "VM_Covid19_Metrics",
+						"type": "DatasetReference"
+					},
+					"name": "vmMetrics"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CasesParquet",
+						"type": "DatasetReference"
+					},
+					"name": "CasesSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DeathsParquet",
+						"type": "DatasetReference"
+					},
+					"name": "DeathsSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "RecoveriesParquet",
+						"type": "DatasetReference"
+					},
+					"name": "RecoveriesSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "union1"
+				},
+				{
+					"name": "Recoveries"
+				},
+				{
+					"name": "Deaths"
+				},
+				{
+					"name": "Cases"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          Updated as date,",
+				"          Confirmed as integer,",
+				"          Confirmed_Change as integer,",
+				"          Deaths as integer,",
+				"          Deaths_Change as integer,",
+				"          Recovered as integer,",
+				"          Recovered_Change as integer,",
+				"          Latitude as decimal(10,5),",
+				"          Longitude as decimal(10,5),",
+				"          ISO2 as string,",
+				"          ISO3 as string,",
+				"          Country_Region as string,",
+				"          load_time as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     partitionBy('hash', 1)) ~> sqlMetrics",
+				"source(output(",
+				"          ID as integer,",
+				"          Updated as date,",
+				"          Confirmed as integer,",
+				"          Confirmed_Change as integer,",
+				"          Deaths as integer,",
+				"          Deaths_Change as integer,",
+				"          Recovered as integer,",
+				"          Recovered_Change as integer,",
+				"          Latitude as decimal(10,5),",
+				"          Longitude as decimal(10,5),",
+				"          ISO2 as string,",
+				"          ISO3 as string,",
+				"          Country_Region as string,",
+				"          load_time as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     partitionBy('hash', 1)) ~> vmMetrics",
+				"sqlMetrics, vmMetrics union(byName: true,",
+				"     partitionBy('hash', 1))~> union1",
+				"union1 select(mapColumn(",
+				"          ID,",
+				"          Date = Updated,",
+				"          Country_Code = ISO3,",
+				"          Recovered,",
+				"          Recovered_Change",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Recoveries",
+				"union1 select(mapColumn(",
+				"          ID,",
+				"          Date = Updated,",
+				"          Country_Code = ISO3,",
+				"          Deaths,",
+				"          Deaths_Change",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Deaths",
+				"union1 select(mapColumn(",
+				"          ID,",
+				"          Date = Updated,",
+				"          Country_Code = ISO3,",
+				"          Cases = Confirmed,",
+				"          Cases_Change = Confirmed_Change",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Cases",
+				"Cases sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['Cases.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> CasesSink",
+				"Deaths sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['Deaths.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DeathsSink",
+				"Recoveries sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['Recoveries.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> RecoveriesSink"
+			]
+		}
+	}
+}

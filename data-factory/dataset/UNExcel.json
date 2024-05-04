@@ -1,0 +1,21 @@
+{
+	"name": "UNExcel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "UnitedNations",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Estimates",
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx"
+			},
+			"firstRowAsHeader": false
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

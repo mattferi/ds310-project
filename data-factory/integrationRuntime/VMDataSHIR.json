@@ -1,0 +1,6 @@
+{
+	"name": "VMDataSHIR",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

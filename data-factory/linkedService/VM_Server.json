@@ -1,0 +1,17 @@
+{
+	"name": "VM_Server",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=covid19;initial catalog=covid19",
+			"userName": "vmadmin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlMjI2YTFiMS1iYWMwLTQ4M2YtYTBkMC1jYWY2OGMyMDk0NDkiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "VMDataSHIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

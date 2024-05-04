@@ -1,0 +1,9 @@
+{
+	"name": "ds310team18",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "57493dde-589e-4d87-a675-ce8f45941696",
+		"tenantId": "d57d32cc-c121-488f-b07b-dfe705680c71"
+	}
+}
